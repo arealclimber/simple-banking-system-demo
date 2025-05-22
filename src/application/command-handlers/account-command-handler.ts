@@ -11,6 +11,7 @@ import { COMMAND_BUS } from '../../infrastructure/bus/command-bus.interface';
 import { EventBus } from '../../infrastructure/bus/event-bus.interface';
 import { EVENT_BUS } from '../../infrastructure/bus/event-bus.interface';
 import { EventStore } from '../../infrastructure/event-store/event-store.interface';
+import { EVENT_STORE } from '../../infrastructure/event-store/event-store.interface';
 import { Inject } from '@nestjs/common';
 import { AccountState } from '../../domain/aggregates/account-state';
 
@@ -19,7 +20,7 @@ export class AccountCommandHandler implements OnModuleInit {
   constructor(
     @Inject(COMMAND_BUS) private readonly commandBus: CommandBus,
     @Inject(EVENT_BUS) private readonly eventBus: EventBus,
-    private readonly eventStore: EventStore,
+    @Inject(EVENT_STORE) private readonly eventStore: EventStore,
   ) {}
 
   onModuleInit() {
