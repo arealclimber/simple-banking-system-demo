@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -16,6 +17,16 @@ async function bootstrap() {
       },
     }),
   );
+
+  // 配置 Swagger
+  const config = new DocumentBuilder()
+    .setTitle('簡易銀行系統 API')
+    .setDescription('簡易銀行系統的 API 文檔')
+    .setVersion('1.0')
+    .addTag('banking')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }
