@@ -75,8 +75,8 @@ describe('Concurrent Transfers (e2e)', () => {
 
     // 分批執行轉帳，確保每個請求都完成
     for (let i = 0; i < totalTransfers / batchSize; i++) {
-      // 使用 any[] 類型以避免類型檢查錯誤
-      const transfers: any[] = [];
+      // 使用 unknown[] 類型以避免類型檢查錯誤
+      const transfers: unknown[] = [];
 
       for (let j = 0; j < batchSize; j++) {
         // 每個請求都必須鏈接 .then() 或 .expect() 才會被正確處理

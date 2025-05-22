@@ -10,7 +10,6 @@ import { READ_MODEL } from '../src/infrastructure/read-model/read-model.interfac
 import { Money } from '../src/domain/value-objects/money';
 import { CommandBus } from '../src/infrastructure/bus/command-bus.interface';
 
-// 定義類型以避免 any 引起的 lint 錯誤
 interface MockCommandBus extends CommandBus {
   execute: jest.Mock;
   register: jest.Mock;
@@ -37,7 +36,7 @@ describe('AccountsController (e2e)', () => {
   let app: INestApplication;
   let accountId: string;
   let commandBusMock: MockCommandBus;
-  let readModelMock: any;
+  let readModelMock: unknown;
 
   beforeAll(async () => {
     // 創建一個固定的帳戶 ID 用於測試
