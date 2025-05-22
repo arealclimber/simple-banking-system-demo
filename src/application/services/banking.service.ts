@@ -16,6 +16,7 @@ import {
   EventStore,
   EVENT_STORE,
 } from '../../infrastructure/event-store/event-store.interface';
+import { MutexLockService } from '../../shared/services/mutex-lock.service';
 
 /**
  * 銀行服務，作為領域功能的門面
@@ -26,6 +27,7 @@ export class BankingService {
     @Inject(COMMAND_BUS) private readonly commandBus: CommandBus,
     @Inject(READ_MODEL) private readonly readModel: BalanceReadModel,
     @Inject(EVENT_STORE) private readonly eventStore: EventStore,
+    private readonly mutexLockService: MutexLockService,
   ) {}
 
   /**
@@ -63,7 +65,7 @@ export class BankingService {
   }
 
   /**
-   * 轉帳
+   * 轉帳，使用互斥鎖確保原子性
    * @param sourceAccountId 來源帳戶ID
    * @param destinationAccountId 目標帳戶ID
    * @param amount 轉帳金額
@@ -73,12 +75,27 @@ export class BankingService {
     destinationAccountId: AccountId,
     amount: Money,
   ): Promise<void> {
-    const command = new TransferCommand(
-      sourceAccountId,
-      destinationAccountId,
-      amount,
-    );
-    await this.commandBus.execute(command);
+    // 獲取來源和目標帳戶的鎖
+    const resourceIds = [
+      sourceAccountId.toString(),
+      destinationAccountId.toString(),
+    ];
+
+    // 獲取互斥鎖（資源按字典序排序獲取，避免死鎖）
+    const release = await this.mutexLockService.acquire(resourceIds);
+
+    try {
+      // 執行轉帳
+      const command = new TransferCommand(
+        sourceAccountId,
+        destinationAccountId,
+        amount,
+      );
+      await this.commandBus.execute(command);
+    } finally {
+      // 確保在轉帳完成或發生錯誤時釋放鎖
+      release();
+    }
   }
 
   /**

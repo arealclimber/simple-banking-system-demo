@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/require-await */
 import { Test } from '@nestjs/testing';
 import { BankingService } from './banking.service';
 import { COMMAND_BUS } from '../../infrastructure/bus/command-bus.interface';
@@ -13,6 +14,7 @@ import { CreateAccountCommand } from '../../domain/commands/create-account.comma
 import { DepositCommand } from '../../domain/commands/deposit.command';
 import { WithdrawCommand } from '../../domain/commands/withdraw.command';
 import { TransferCommand } from '../../domain/commands/transfer.command';
+import { MutexLockService } from '../../shared/services/mutex-lock.service';
 
 function getCommandArgument<T>(mock: jest.Mock): T {
   return (mock.mock.calls as unknown[][])[0][0] as T;
@@ -44,6 +46,7 @@ describe('BankingService', () => {
             append: jest.fn().mockResolvedValue(undefined),
           },
         },
+        MutexLockService,
       ],
     }).compile();
 
@@ -226,6 +229,75 @@ describe('BankingService', () => {
       // 驗證結果
       expect(accounts).toBe(expectedAccounts);
       expect(readModel.getAllAccounts).toHaveBeenCalled();
+    });
+  });
+
+  describe('Concurrent transfers', () => {
+    it('should handle 100 concurrent transfers correctly', async () => {
+      // 創建兩個測試帳戶
+      const sourceAccountId = new AccountId();
+      const destinationAccountId = new AccountId();
+
+      // 設置讀取模型的初始狀態
+      const sourceInitialBalance = new Money(10000); // 初始餘額 10000
+      const destInitialBalance = new Money(5000); // 初始餘額 5000
+
+      // 模擬餘額數據
+      let sourceBalance = sourceInitialBalance;
+      let destBalance = destInitialBalance;
+
+      // 設置 readModel 模擬返回實際餘額
+      jest.spyOn(readModel, 'getBalance').mockImplementation((id) => {
+        if (id.toString() === sourceAccountId.toString()) {
+          return Promise.resolve(sourceBalance);
+        }
+        if (id.toString() === destinationAccountId.toString()) {
+          return Promise.resolve(destBalance);
+        }
+        return Promise.resolve(undefined);
+      });
+
+      // 模擬 commandBus.execute，實際更新餘額
+      jest.spyOn(commandBus, 'execute').mockImplementation(async (command) => {
+        if (command instanceof TransferCommand) {
+          const { amount } = command;
+          // 確保有足夠的餘額
+          if (sourceBalance.getValue() < amount.getValue()) {
+            throw new Error('Insufficient funds');
+          }
+          // 更新餘額
+          sourceBalance = new Money(
+            sourceBalance.getValue() - amount.getValue(),
+          );
+          destBalance = new Money(destBalance.getValue() + amount.getValue());
+        }
+        return undefined;
+      });
+
+      // 創建100個並發轉帳任務，每個轉帳10元
+      const transferAmount = new Money(10);
+
+      const concurrentTransfers = Array(100)
+        .fill(0)
+        .map(() =>
+          bankingService.transfer(
+            sourceAccountId,
+            destinationAccountId,
+            transferAmount,
+          ),
+        );
+
+      // 等待所有轉帳完成
+      await Promise.all(concurrentTransfers);
+
+      // 驗證最終餘額
+      // 來源帳戶：10000 - (100 * 10) = 9000
+      // 目標帳戶：5000 + (100 * 10) = 6000
+      expect(sourceBalance.getValue()).toBe(9000);
+      expect(destBalance.getValue()).toBe(6000);
+
+      // 驗證 commandBus.execute 被調用了正確的次數
+      expect(commandBus.execute).toHaveBeenCalledTimes(100);
     });
   });
 });
