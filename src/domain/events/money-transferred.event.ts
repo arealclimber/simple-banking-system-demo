@@ -1,15 +1,19 @@
+import { AbstractEvent } from './abstract-event';
 import { EventType } from '../enums/event-type.enum';
 import { AccountId } from '../value-objects/account-id';
 import { Money } from '../value-objects/money';
-import { AbstractEvent } from './abstract-event';
+import {
+  TimestampInMillisecond,
+  TimestampUtils,
+} from '../types/timestamp.types';
 
 export class MoneyTransferredEvent extends AbstractEvent {
   constructor(
-    readonly aggregateId: AccountId,
-    readonly destinationAccountId: AccountId,
-    readonly amount: Money,
-    readonly version: number,
-    readonly occurredAt: Date = new Date(),
+    aggregateId: AccountId,
+    public readonly amount: Money,
+    public readonly toAccountId: AccountId,
+    readonly occurredAt: TimestampInMillisecond = TimestampUtils.now(),
+    readonly version: number = 1,
   ) {
     super(EventType.MONEY_TRANSFERRED, aggregateId, occurredAt, version);
   }
@@ -18,10 +22,10 @@ export class MoneyTransferredEvent extends AbstractEvent {
     return {
       type: this.type,
       aggregateId: this.aggregateId.toString(),
-      destinationAccountId: this.destinationAccountId.toString(),
       amount: this.amount.getValue(),
+      toAccountId: this.toAccountId.toString(),
+      occurredAt: TimestampUtils.toISOString(this.occurredAt),
       version: this.version,
-      occurredAt: this.occurredAt.toISOString(),
     };
   }
 }

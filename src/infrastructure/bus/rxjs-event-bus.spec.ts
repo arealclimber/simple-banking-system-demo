@@ -2,6 +2,7 @@ import { AccountId } from '../../domain/value-objects/account-id';
 import { Money } from '../../domain/value-objects/money';
 import { AccountCreatedEvent } from '../../domain/events/account-created.event';
 import { MoneyDepositedEvent } from '../../domain/events/money-deposited.event';
+import { EventType } from '../../domain/enums/event-type.enum';
 import { RxjsEventBus } from './rxjs-event-bus';
 
 describe('RxjsEventBus', () => {
@@ -18,9 +19,9 @@ describe('RxjsEventBus', () => {
     const moneyDepositedHandler = jest.fn();
     const anyEventHandler = jest.fn();
 
-    // 訂閱特定事件類型
-    eventBus.subscribe('AccountCreated', accountCreatedHandler);
-    eventBus.subscribe('MoneyDeposited', moneyDepositedHandler);
+    // 訂閱特定事件類型 - 使用更新後的事件類型
+    eventBus.subscribe(EventType.ACCOUNT_CREATED, accountCreatedHandler);
+    eventBus.subscribe(EventType.MONEY_DEPOSITED, moneyDepositedHandler);
 
     // 建立事件
     const accountCreatedEvent = new AccountCreatedEvent(
@@ -47,8 +48,8 @@ describe('RxjsEventBus', () => {
   it('should allow unsubscribing from events', () => {
     const handler = jest.fn();
 
-    // 訂閱事件
-    const unsubscribe = eventBus.subscribe('AccountCreated', handler);
+    // 訂閱事件 - 使用更新後的事件類型
+    const unsubscribe = eventBus.subscribe(EventType.ACCOUNT_CREATED, handler);
 
     // 建立事件
     const event = new AccountCreatedEvent(
@@ -74,8 +75,8 @@ describe('RxjsEventBus', () => {
     const accountCreatedHandler = jest.fn();
     const moneyDepositedHandler = jest.fn();
 
-    // 只訂閱 AccountCreated 事件
-    eventBus.subscribe('AccountCreated', accountCreatedHandler);
+    // 只訂閱 AccountCreated 事件 - 使用更新後的事件類型
+    eventBus.subscribe(EventType.ACCOUNT_CREATED, accountCreatedHandler);
 
     // 建立不同類型的事件
     const accountCreatedEvent = new AccountCreatedEvent(

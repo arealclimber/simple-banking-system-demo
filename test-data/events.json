@@ -1,0 +1,50 @@
+{
+  "events": [
+    {
+      "type": "AccountCreatedEvent",
+      "aggregateId": "acc-001",
+      "payload": {
+        "name": "Alice的帳戶",
+        "initialBalance": {
+          "amount": 1000
+        }
+      },
+      "version": 1,
+      "occurredAt": "2025-01-23T10:00:00.000Z"
+    },
+    {
+      "type": "AccountCreatedEvent",
+      "aggregateId": "acc-002",
+      "payload": {
+        "name": "Bob的帳戶",
+        "initialBalance": {
+          "amount": 500
+        }
+      },
+      "version": 1,
+      "occurredAt": "2025-01-23T10:01:00.000Z"
+    },
+    {
+      "type": "MoneyDepositedEvent",
+      "aggregateId": "acc-001",
+      "payload": {
+        "amount": {
+          "amount": 200
+        }
+      },
+      "version": 2,
+      "occurredAt": "2025-01-23T10:02:00.000Z"
+    },
+    {
+      "type": "MoneyWithdrawnEvent",
+      "aggregateId": "acc-002",
+      "payload": {
+        "amount": {
+          "amount": 100
+        }
+      },
+      "version": 2,
+      "occurredAt": "2025-01-23T10:03:00.000Z"
+    }
+  ]
+}

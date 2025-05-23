@@ -1,5 +1,6 @@
 import { CommandType } from '../enums/command-type.enum';
 import { AccountId } from '../value-objects/account-id';
+import { TimestampInMillisecond } from '../types/timestamp.types';
 
 /**
  * 所有領域命令的基礎接口
@@ -14,5 +15,5 @@ export interface DomainCommand {
 export interface Command {
   readonly type: CommandType;
   readonly aggregateId: AccountId;
-  readonly timestamp: Date;
+  readonly timestamp: TimestampInMillisecond;
 }

@@ -45,8 +45,8 @@ export class AccountAggregate {
       command.aggregateId,
       command.name,
       command.initialBalance,
-      this.state.getVersion() + 1,
       command.timestamp,
+      this.state.getVersion() + 1,
     );
     return [event];
   }
@@ -55,8 +55,8 @@ export class AccountAggregate {
     const event = new MoneyDepositedEvent(
       command.aggregateId,
       command.amount,
-      this.state.getVersion() + 1,
       command.timestamp,
+      this.state.getVersion() + 1,
     );
     return [event];
   }
@@ -67,8 +67,8 @@ export class AccountAggregate {
     const event = new MoneyWithdrawnEvent(
       command.aggregateId,
       command.amount,
-      this.state.getVersion() + 1,
       command.timestamp,
+      this.state.getVersion() + 1,
     );
     return [event];
   }
@@ -78,10 +78,10 @@ export class AccountAggregate {
 
     const event = new MoneyTransferredEvent(
       command.aggregateId,
-      command.destinationAccountId,
       command.amount,
-      this.state.getVersion() + 1,
+      command.destinationAccountId,
       command.timestamp,
+      this.state.getVersion() + 1,
     );
     return [event];
   }
@@ -90,5 +90,9 @@ export class AccountAggregate {
     if (!this.state.getBalance().isGreaterThanOrEqual(amount)) {
       throw new InsufficientFundsError();
     }
+  }
+
+  getBalance(): Money {
+    return this.state.getBalance();
   }
 }

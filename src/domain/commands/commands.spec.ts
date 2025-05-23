@@ -18,7 +18,8 @@ describe('Commands', () => {
     expect(command.aggregateId).toBe(accountId);
     expect(command.name).toBe(name);
     expect(command.initialBalance).toBe(initialBalance);
-    expect(command.timestamp).toBeInstanceOf(Date);
+    expect(typeof command.timestamp).toBe('number');
+    expect(command.timestamp).toBeGreaterThan(0);
   });
 
   it('should create a valid DepositCommand', () => {
@@ -30,25 +31,27 @@ describe('Commands', () => {
     expect(command.type).toBe(CommandType.DEPOSIT);
     expect(command.aggregateId).toBe(accountId);
     expect(command.amount).toBe(amount);
-    expect(command.timestamp).toBeInstanceOf(Date);
+    expect(typeof command.timestamp).toBe('number');
+    expect(command.timestamp).toBeGreaterThan(0);
   });
 
   it('should create a valid WithdrawCommand', () => {
     const accountId = new AccountId();
-    const amount = new Money(30);
+    const amount = new Money(25);
 
     const command = new WithdrawCommand(accountId, amount);
 
     expect(command.type).toBe(CommandType.WITHDRAW);
     expect(command.aggregateId).toBe(accountId);
     expect(command.amount).toBe(amount);
-    expect(command.timestamp).toBeInstanceOf(Date);
+    expect(typeof command.timestamp).toBe('number');
+    expect(command.timestamp).toBeGreaterThan(0);
   });
 
   it('should create a valid TransferCommand', () => {
     const sourceAccountId = new AccountId();
     const destinationAccountId = new AccountId();
-    const amount = new Money(20);
+    const amount = new Money(75);
 
     const command = new TransferCommand(
       sourceAccountId,
@@ -60,6 +63,7 @@ describe('Commands', () => {
     expect(command.aggregateId).toBe(sourceAccountId);
     expect(command.destinationAccountId).toBe(destinationAccountId);
     expect(command.amount).toBe(amount);
-    expect(command.timestamp).toBeInstanceOf(Date);
+    expect(typeof command.timestamp).toBe('number');
+    expect(command.timestamp).toBeGreaterThan(0);
   });
 });

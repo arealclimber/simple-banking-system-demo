@@ -12,6 +12,7 @@ import { MoneyWithdrawnEvent } from '../events/money-withdrawn.event';
 import { MoneyTransferredEvent } from '../events/money-transferred.event';
 import { InsufficientFundsError } from '../errors/domain.error';
 import { EventType } from '../enums/event-type.enum';
+import { TimestampUtils } from '../types/timestamp.types';
 
 describe('AccountAggregate', () => {
   let accountId: AccountId;
@@ -34,7 +35,7 @@ describe('AccountAggregate', () => {
 
     const event = events[0] as AccountCreatedEvent;
     expect(event.aggregateId).toBe(accountId);
-    expect(event.name).toBe(name);
+    expect(event.accountName).toBe(name);
     expect(event.initialBalance).toBe(initialBalance);
     expect(event.version).toBe(1);
   });
@@ -42,7 +43,13 @@ describe('AccountAggregate', () => {
   it('should deposit money into an account', () => {
     // 先創建帳戶並應用事件
     const account = AccountAggregate.rehydrate([
-      new AccountCreatedEvent(accountId, 'Test Account', new Money(100), 1),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        new Money(100),
+        TimestampUtils.now(),
+        1,
+      ),
     ]);
 
     const amount = new Money(50);
@@ -62,7 +69,13 @@ describe('AccountAggregate', () => {
   it('should withdraw money from an account with sufficient funds', () => {
     // 先創建帳戶並應用事件
     const account = AccountAggregate.rehydrate([
-      new AccountCreatedEvent(accountId, 'Test Account', new Money(100), 1),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        new Money(100),
+        TimestampUtils.now(),
+        1,
+      ),
     ]);
 
     const amount = new Money(50);
@@ -82,7 +95,13 @@ describe('AccountAggregate', () => {
   it('should throw InsufficientFundsError when withdrawing more than the balance', () => {
     // 先創建帳戶並應用事件
     const account = AccountAggregate.rehydrate([
-      new AccountCreatedEvent(accountId, 'Test Account', new Money(50), 1),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        new Money(50),
+        TimestampUtils.now(),
+        1,
+      ),
     ]);
 
     const amount = new Money(100);
@@ -94,7 +113,13 @@ describe('AccountAggregate', () => {
   it('should transfer money between accounts with sufficient funds', () => {
     // 先創建帳戶並應用事件
     const account = AccountAggregate.rehydrate([
-      new AccountCreatedEvent(accountId, 'Test Account', new Money(100), 1),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        new Money(100),
+        TimestampUtils.now(),
+        1,
+      ),
     ]);
 
     const destinationAccountId = new AccountId();
@@ -112,7 +137,7 @@ describe('AccountAggregate', () => {
 
     const event = events[0] as MoneyTransferredEvent;
     expect(event.aggregateId).toBe(accountId);
-    expect(event.destinationAccountId).toBe(destinationAccountId);
+    expect(event.toAccountId).toBe(destinationAccountId);
     expect(event.amount).toBe(amount);
     expect(event.version).toBe(2);
   });
@@ -120,7 +145,13 @@ describe('AccountAggregate', () => {
   it('should throw InsufficientFundsError when transferring more than the balance', () => {
     // 先創建帳戶並應用事件
     const account = AccountAggregate.rehydrate([
-      new AccountCreatedEvent(accountId, 'Test Account', new Money(50), 1),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        new Money(50),
+        TimestampUtils.now(),
+        1,
+      ),
     ]);
 
     const destinationAccountId = new AccountId();
@@ -139,11 +170,18 @@ describe('AccountAggregate', () => {
     const depositAmount = new Money(50);
     const withdrawAmount = new Money(30);
     const remainingAmount = new Money(120); // 100 + 50 - 30 = 120
+    const timestamp = TimestampUtils.now();
 
     const events = [
-      new AccountCreatedEvent(accountId, 'Test Account', initialBalance, 1),
-      new MoneyDepositedEvent(accountId, depositAmount, 2),
-      new MoneyWithdrawnEvent(accountId, withdrawAmount, 3),
+      new AccountCreatedEvent(
+        accountId,
+        'Test Account',
+        initialBalance,
+        timestamp,
+        1,
+      ),
+      new MoneyDepositedEvent(accountId, depositAmount, timestamp, 2),
+      new MoneyWithdrawnEvent(accountId, withdrawAmount, timestamp, 3),
     ];
 
     const account = AccountAggregate.rehydrate(events);

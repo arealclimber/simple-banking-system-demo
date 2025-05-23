@@ -2,13 +2,17 @@ import { EventType } from '../enums/event-type.enum';
 import { AccountId } from '../value-objects/account-id';
 import { Money } from '../value-objects/money';
 import { AbstractEvent } from './abstract-event';
+import {
+  TimestampInMillisecond,
+  TimestampUtils,
+} from '../types/timestamp.types';
 
 export class MoneyWithdrawnEvent extends AbstractEvent {
   constructor(
     readonly aggregateId: AccountId,
-    readonly amount: Money,
-    readonly version: number,
-    readonly occurredAt: Date = new Date(),
+    public readonly amount: Money,
+    readonly occurredAt: TimestampInMillisecond = TimestampUtils.now(),
+    readonly version: number = 1,
   ) {
     super(EventType.MONEY_WITHDRAWN, aggregateId, occurredAt, version);
   }
@@ -18,8 +22,8 @@ export class MoneyWithdrawnEvent extends AbstractEvent {
       type: this.type,
       aggregateId: this.aggregateId.toString(),
       amount: this.amount.getValue(),
+      occurredAt: TimestampUtils.toISOString(this.occurredAt),
       version: this.version,
-      occurredAt: this.occurredAt.toISOString(),
     };
   }
 }

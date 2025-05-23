@@ -15,11 +15,11 @@ export class HealthController {
     schema: {
       type: 'object',
       properties: {
-        status: { type: 'string', example: 'ok' },
+        status: { type: 'string', example: 'OK' },
         timestamp: {
-          type: 'string',
-          format: 'date-time',
-          example: '2025-05-23T02:56:11.000Z',
+          type: 'number',
+          description: '當前時間戳（毫秒）',
+          example: 1640995200000,
         },
       },
     },

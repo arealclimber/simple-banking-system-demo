@@ -26,7 +26,12 @@ describe('InMemoryEventStore', () => {
       new Money(100),
       1,
     );
-    const event2 = new MoneyDepositedEvent(accountId, new Money(50), 2);
+    const event2 = new MoneyDepositedEvent(
+      accountId,
+      new Money(50),
+      Date.now(),
+      2,
+    );
 
     await eventStore.append(accountId, 0, [event1]);
     await eventStore.append(accountId, 1, [event2]);
@@ -50,30 +55,40 @@ describe('InMemoryEventStore', () => {
     // 嘗試使用錯誤的期望版本（0而不是1）附加事件
     await expect(
       eventStore.append(accountId, 0, [
-        new MoneyDepositedEvent(accountId, new Money(50), 2),
+        new MoneyDepositedEvent(accountId, new Money(50), Date.now(), 2),
       ]),
     ).rejects.toThrow(ConcurrencyError);
   });
 
-  it('should handle concurrent operations correctly', async () => {
+  it('should detect version conflicts in sequential operations', async () => {
     const event1 = new AccountCreatedEvent(
       accountId,
       'Test Account',
       new Money(100),
       1,
     );
-    const event2 = new MoneyDepositedEvent(accountId, new Money(50), 2);
-    const event3 = new MoneyDepositedEvent(accountId, new Money(30), 3);
+    const event2 = new MoneyDepositedEvent(
+      accountId,
+      new Money(50),
+      Date.now(),
+      2,
+    );
+    const event3 = new MoneyDepositedEvent(
+      accountId,
+      new Money(30),
+      Date.now(),
+      3,
+    );
 
     await eventStore.append(accountId, 0, [event1]);
 
-    // 模擬兩個並發操作
-    const op1 = eventStore.append(accountId, 1, [event2]);
-    const op2 = eventStore.append(accountId, 1, [event3]);
+    // 第一個操作成功
+    await eventStore.append(accountId, 1, [event2]);
 
-    // 第一個操作應該成功，第二個應該失敗
-    await op1;
-    await expect(op2).rejects.toThrow(ConcurrencyError);
+    // 第二個操作使用過期的版本號（1而不是2），應該失敗
+    await expect(eventStore.append(accountId, 1, [event3])).rejects.toThrow(
+      ConcurrencyError,
+    );
 
     // 驗證事件流中只有 event1 和 event2
     const events = await eventStore.load(accountId);

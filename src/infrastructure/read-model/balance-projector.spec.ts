@@ -149,8 +149,8 @@ describe('BalanceProjector', () => {
     // 執行轉帳
     const transferEvent = new MoneyTransferredEvent(
       sourceAccountId,
-      destinationAccountId,
       transferAmount,
+      destinationAccountId,
       2,
     );
     eventBus.publish([transferEvent]);

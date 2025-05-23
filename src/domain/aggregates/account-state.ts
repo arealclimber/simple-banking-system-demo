@@ -42,7 +42,7 @@ export class AccountState {
   }
 
   private applyAccountCreated(event: AccountCreatedEvent): void {
-    this.name = event.name;
+    this.name = event.accountName;
     this.balance = event.initialBalance;
   }
 

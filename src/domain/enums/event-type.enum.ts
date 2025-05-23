@@ -1,6 +1,6 @@
 export enum EventType {
-  ACCOUNT_CREATED = 'AccountCreated',
-  MONEY_DEPOSITED = 'MoneyDeposited',
-  MONEY_WITHDRAWN = 'MoneyWithdrawn',
-  MONEY_TRANSFERRED = 'MoneyTransferred',
+  ACCOUNT_CREATED = 'AccountCreatedEvent',
+  MONEY_DEPOSITED = 'MoneyDepositedEvent',
+  MONEY_WITHDRAWN = 'MoneyWithdrawnEvent',
+  MONEY_TRANSFERRED = 'MoneyTransferredEvent',
 }

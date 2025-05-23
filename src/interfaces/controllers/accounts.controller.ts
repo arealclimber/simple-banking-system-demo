@@ -7,24 +7,36 @@ import {
   Param,
   Post,
   ParseUUIDPipe,
+  Query,
+  Inject,
 } from '@nestjs/common';
 import { BankingService } from '../../application/services/banking.service';
 import { CreateAccountDto } from '../dtos/create-account.dto';
 import { MoneyDto } from '../dtos/money.dto';
 import { TransferDto } from '../dtos/transfer.dto';
+import {
+  GetTransactionsQueryDto,
+  TransactionResponseDto,
+} from '../dtos/get-transactions.dto';
 import { AccountId } from '../../domain/value-objects/account-id';
+import { TransactionLogReadModel } from '../../infrastructure/read-model/transaction-log.interface';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('accounts')
 @Controller('accounts')
 export class AccountsController {
-  constructor(private readonly bankingService: BankingService) {}
+  constructor(
+    private readonly bankingService: BankingService,
+    @Inject('TransactionLogReadModel')
+    private readonly transactionLog: TransactionLogReadModel,
+  ) {}
 
   /**
    * 創建帳戶
@@ -241,6 +253,64 @@ export class AccountsController {
     return {
       balance: balance.getValue(),
     };
+  }
+
+  /**
+   * 獲取帳戶交易記錄
+   * @param accountId 帳戶 ID
+   * @param query 查詢參數
+   * @returns 交易記錄列表
+   */
+  @Get(':id/transactions')
+  @ApiOperation({ summary: '獲取指定帳戶的交易記錄' })
+  @ApiParam({
+    name: 'id',
+    description: '帳戶 ID',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: '限制返回的交易記錄數量',
+    required: false,
+    type: Number,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'since',
+    description: '查詢此時間戳之後的交易記錄（毫秒時間戳）',
+    required: false,
+    type: Number,
+    example: 1640995200000,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '成功獲取交易記錄',
+    type: [TransactionResponseDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '請求參數無效',
+  })
+  getTransactions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: GetTransactionsQueryDto,
+  ): TransactionResponseDto[] {
+    const accountId = new AccountId(id);
+
+    const transactions = this.transactionLog.getTransactionLogs(
+      accountId,
+      query.limit,
+      query.since,
+    );
+
+    return transactions.map((transaction) => ({
+      id: transaction.id,
+      type: transaction.type,
+      amount: transaction.amount,
+      occurredAt: transaction.occurredAt,
+      toAccountId: transaction.toAccountId,
+      version: transaction.version,
+    }));
   }
 
   /**

@@ -3,6 +3,7 @@ import { AccountCreatedEvent } from '../../domain/events/account-created.event';
 import { MoneyDepositedEvent } from '../../domain/events/money-deposited.event';
 import { MoneyTransferredEvent } from '../../domain/events/money-transferred.event';
 import { MoneyWithdrawnEvent } from '../../domain/events/money-withdrawn.event';
+import { EventType } from '../../domain/enums/event-type.enum';
 import { EventBus } from '../bus/event-bus.interface';
 import { EVENT_BUS } from '../bus/event-bus.interface';
 import { InMemoryBalanceReadModel } from './in-memory-balance-read-model';
@@ -28,30 +29,30 @@ export class BalanceProjector implements OnModuleInit {
    * 訂閱相關事件
    */
   private subscribeToEvents() {
-    // 訂閱帳戶創建事件
-    this.eventBus.subscribe('AccountCreated', (event) => {
+    // 訂閱帳戶創建事件 - 使用類型安全的枚舉
+    this.eventBus.subscribe(EventType.ACCOUNT_CREATED, (event) => {
       const accountCreatedEvent = event as AccountCreatedEvent;
       void this.balanceReadModel.upsertAccount(
         accountCreatedEvent.aggregateId,
-        accountCreatedEvent.name,
+        accountCreatedEvent.accountName,
         accountCreatedEvent.initialBalance,
       );
     });
 
-    // 訂閱存款事件
-    this.eventBus.subscribe('MoneyDeposited', (event) => {
+    // 訂閱存款事件 - 使用類型安全的枚舉
+    this.eventBus.subscribe(EventType.MONEY_DEPOSITED, (event) => {
       const depositEvent = event as MoneyDepositedEvent;
       void this.handleDepositEvent(depositEvent);
     });
 
-    // 訂閱取款事件
-    this.eventBus.subscribe('MoneyWithdrawn', (event) => {
+    // 訂閱取款事件 - 使用類型安全的枚舉
+    this.eventBus.subscribe(EventType.MONEY_WITHDRAWN, (event) => {
       const withdrawEvent = event as MoneyWithdrawnEvent;
       void this.handleWithdrawEvent(withdrawEvent);
     });
 
-    // 訂閱轉帳事件
-    this.eventBus.subscribe('MoneyTransferred', (event) => {
+    // 訂閱轉帳事件 - 使用類型安全的枚舉
+    this.eventBus.subscribe(EventType.MONEY_TRANSFERRED, (event) => {
       const transferEvent = event as MoneyTransferredEvent;
       void this.handleTransferEvent(transferEvent);
     });
@@ -98,7 +99,7 @@ export class BalanceProjector implements OnModuleInit {
     event: MoneyTransferredEvent,
   ): Promise<void> {
     const sourceAccountId = event.aggregateId;
-    const destinationAccountId = event.destinationAccountId;
+    const destinationAccountId = event.toAccountId;
 
     // 處理轉出方
     const sourceAccount =

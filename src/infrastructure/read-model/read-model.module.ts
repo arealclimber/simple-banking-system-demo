@@ -1,19 +1,32 @@
 import { Module } from '@nestjs/common';
-import { BusModule } from '../bus/bus.module';
 import { BalanceProjector } from './balance-projector';
 import { InMemoryBalanceReadModel } from './in-memory-balance-read-model';
+import { TransactionHistoryProjector } from './transaction-history.projector';
+import { InMemoryTransactionLogReadModel } from './in-memory-transaction-log.read-model';
+import { BusModule } from '../bus/bus.module';
 import { READ_MODEL } from './read-model.interface';
 
 @Module({
   imports: [BusModule],
   providers: [
-    InMemoryBalanceReadModel,
     BalanceProjector,
+    InMemoryBalanceReadModel,
+    InMemoryTransactionLogReadModel,
+    TransactionHistoryProjector,
+    {
+      provide: 'TransactionLogReadModel',
+      useExisting: InMemoryTransactionLogReadModel,
+    },
     {
       provide: READ_MODEL,
       useExisting: InMemoryBalanceReadModel,
     },
   ],
-  exports: [READ_MODEL, InMemoryBalanceReadModel],
+  exports: [
+    InMemoryBalanceReadModel,
+    InMemoryTransactionLogReadModel,
+    'TransactionLogReadModel',
+    READ_MODEL,
+  ],
 })
 export class ReadModelModule {}
