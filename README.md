@@ -1,827 +1,567 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+- [🏦 Simple Banking System - Technical Interview Project](#-simple-banking-system---technical-interview-project)
+  - [⭐Overview](#overview)
+    - [Technical Highlights](#technical-highlights)
+    - [Complete Implementation Requirements](#complete-implementation-requirements)
+    - [Why These Technologies?](#why-these-technologies)
+  - [📚 Project Structure](#-project-structure)
+  - [Quick Start \& Verification](#quick-start--verification)
+    - [Method 1: Interactive API Testing with Swagger (Recommended)](#method-1-interactive-api-testing-with-swagger-recommended)
+    - [Method 2: Automated Demo Script](#method-2-automated-demo-script)
+    - [Method 3: Docker Deployment](#method-3-docker-deployment)
+    - [Method 4: Complete Test Suite](#method-4-complete-test-suite)
+  - [🏗️ Technical Architecture Design](#️-technical-architecture-design)
+    - [Core Architecture Pattern](#core-architecture-pattern)
+    - [Event Sourcing Advantages](#event-sourcing-advantages)
+    - [Why Choose Event Sourcing?](#why-choose-event-sourcing)
+  - [🧪 Testing \& Quality Assurance](#-testing--quality-assurance)
+    - [Test Coverage](#test-coverage)
+    - [Test Commands](#test-commands)
+  - [🐳 Deployment \& Operations](#-deployment--operations)
+    - [Docker Deployment](#docker-deployment)
+    - [Production-Ready Features](#production-ready-features)
+  - [📡 API Reference](#-api-reference)
+    - [Starting the Service](#starting-the-service)
+    - [Core API Endpoints](#core-api-endpoints)
+      - [1. Create Account](#1-create-account)
+      - [2. Deposit Operation](#2-deposit-operation)
+      - [3. Withdrawal Operation](#3-withdrawal-operation)
+      - [4. Transfer Operation](#4-transfer-operation)
+      - [5. Query Account Balance](#5-query-account-balance)
+      - [6. Query Transaction History](#6-query-transaction-history)
+  - [🔧 Development Tools \& Workflow](#-development-tools--workflow)
+    - [Code Quality Tools](#code-quality-tools)
+    - [Development Best Practices](#development-best-practices)
+  - [📈 Possible Future Features](#-possible-future-features)
+    - [Phase 1: Production Transformation](#phase-1-production-transformation)
+    - [Phase 2: Microservices](#phase-2-microservices)
+    - [Phase 3: Cloud Native](#phase-3-cloud-native)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 🏦 Simple Banking System - Technical Interview Project
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> **Project Focus**: Banking system based on NestJS + Event Sourcing, implementing DDD architecture with concurrent-safe transfer operations and comprehensive transaction logging
 
-## Description
+## ⭐Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project demonstrates a production-ready banking system with complete **interactive API documentation via Swagger UI**. You can test all endpoints directly from your browser at `http://localhost:3000/api` after starting the server.
 
-## Project setup
+### Technical Highlights
 
-```bash
-$ npm install
-```
+- **Event Sourcing + CQRS**: Complete audit trail with event replay support
+- **DDD Hexagonal Architecture**: Pure business logic separated from infrastructure
+- **Concurrency Safety**: Mutex locks preventing deadlocks + optimistic locking with version control
+- **Type Safety**: Complete TypeScript type definitions with zero `any` types
+- **Test-Driven Development**: 62 unit tests + 12 E2E tests, 95% coverage
+- **Interactive API Documentation**: Swagger UI with live API testing capability
 
-## Compile and run the project
+### Complete Implementation Requirements
 
-```bash
-# development
-$ npm run start
+| Requirement               | Implementation Solution       | Verification Method  |
+| ------------------------- | ----------------------------- | -------------------- |
+| ✅ RESTful API            | NestJS Controllers + Swagger  | Interactive API docs |
+| ✅ Non-negative Balance   | Domain Aggregate Rules        | Unit test coverage   |
+| ✅ CRUD Operations        | Complete Account Management   | E2E testing          |
+| ✅ Transaction Log        | Event Sourcing Event Stream   | Demo script          |
+| ✅ Atomic Transaction     | Mutex Lock + Event Store      | 100 concurrent test  |
+| ✅ Unit/Integration Tests | Jest + Supertest              | Complete test suite  |
+| ✅ Docker Deployment      | Multi-stage build             | Docker container     |
+| ✅ In-Memory Storage      | Custom EventStore + ReadModel | Pure memory runtime  |
 
-# watch mode
-$ npm run start:dev
+### Why These Technologies?
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-# 銀行系統 API
-
-一個使用 NestJS 和事件源架構實現的簡單銀行系統，支持帳戶管理、交易操作和完整的交易記錄追蹤。
-
-## 🎯 面試展示：交易記錄功能
-
-### ⚡ 5 分鐘快速驗證
-
-**步驟 1: 一鍵功能演示**
-
-```bash
-npm install
-npm run demo
-```
-
-這會自動展示所有交易記錄功能，包括：
-
-- ✅ 創建帳戶並執行各種交易
-- ✅ 查詢交易記錄（包含 when、amount、toAccountId）
-- ✅ 測試 limit 和 since 查詢參數
-- ✅ 驗證冪等性保證
-
-**步驟 2: 測試覆蓋驗證**
-
-```bash
-# 交易記錄端對端測試（6個場景）
-npm run test:e2e -- --testPathPattern=transaction-log.e2e-spec.ts
-
-# 交易記錄單元測試（3個場景，專注冪等性）
-npm run test -- --testPathPattern=transaction-history.projector.spec.ts
-```
-
-**步驟 3: API 文檔查看**
-
-```bash
-npm run start:dev
-# 訪問 http://localhost:3000/api
-# 查看 GET /accounts/{id}/transactions 端點
-```
-
-### 📊 題目要求完整對照
-
-| 面試要求                         | 實現位置                    | 驗證方法                  |
-| -------------------------------- | --------------------------- | ------------------------- |
-| **Transaction log per transfer** | TransactionHistoryProjector | 演示腳本展示轉帳記錄      |
-| **when (時間戳)**                | LogEntry.occurredAt         | API 響應包含毫秒時間戳    |
-| **amount (金額)**                | LogEntry.amount             | API 響應包含精確金額      |
-| **to-what-account (目標帳戶)**   | LogEntry.toAccountId        | API 響應包含目標帳戶 UUID |
-
-### 🏗️ 技術亮點
-
-**事件源 + CQRS 架構：**
-
-- 完整審計軌跡，支持事件重播
-- 讀寫分離優化查詢性能
-- 確定性 ID 保證冪等性
-
-**命名統一優化：**
-
-- 解決了事件類名與事件類型不一致問題
-- 使用 TypeScript 枚舉替代魔法字符串
-- 提高代碼可維護性和 IDE 支援
-
-**詳細文檔：**
-
-- 📖 [完整驗證指南](docs/transaction-log-verification.md)
-- 📖 [面試展示摘要](docs/interview-demo-summary.md)
-- 📖 [事件命名規範](docs/event-naming-convention.md)
+**NestJS**: Enterprise-grade Node.js framework with built-in DI container, modular architecture, and excellent TypeScript support  
+**Event Sourcing**: Essential complete audit trail for financial systems, naturally supports concurrency and consistency  
+**Domain-Driven Design**: Best practice for complex business logic, easy to test and maintain  
+**Swagger/OpenAPI**: Provides interactive API documentation that allows immediate testing and exploration of all endpoints
 
 ---
 
-# 簡易銀行系統
+## 📚 Project Structure
 
-使用領域驅動設計和事件源模式實現的簡易銀行系統 API。
+```
+src/
+├── domain/              # Domain layer (pure business logic)
+│   ├── value-objects/   # Value objects (Money, AccountId)
+│   ├── aggregates/      # Aggregate roots (AccountAggregate)
+│   ├── events/          # Domain events
+│   └── commands/        # Business commands
+├── application/         # Application layer (use case orchestration)
+│   ├── services/        # Application services (BankingService)
+│   ├── buses/           # Command and event buses
+│   └── projectors/      # Event projectors
+├── infrastructure/      # Infrastructure layer
+│   ├── event-store/     # Event storage
+│   ├── read-model/      # Read models
+│   └── mutex/           # Concurrency control
+└── interfaces/          # Interface layer
+    ├── controllers/     # REST API controllers
+    ├── dto/             # Data transfer objects
+    └── health/          # Health checks
+```
 
-## 功能特點
+## Quick Start & Verification
 
-- 基於 NestJS 框架的 RESTful API
-- 採用領域驅動設計 (DDD) 和事件源 (Event Sourcing) 架構
-- 提供帳戶創建、存款、取款和轉帳等基本銀行操作
-- 確保帳戶餘額不能為負數
-- 生成帳戶交易日誌
-- 支持原子交易（使用基於互斥鎖的並發控制）
-- 單元測試和端對端測試
+### Method 1: Interactive API Testing with Swagger (Recommended)
 
-## API 文檔
+```bash
+# Start the development server
+npm install
+npm run start:dev
+```
 
-啟動服務器後，您可以在瀏覽器中訪問 [http://localhost:3000/api](http://localhost:3000/api) 查看 Swagger UI 文檔。
+**Access Swagger Documentation**: http://localhost:3000/api
 
-## API 請求示例
+- **Interactive API Testing**: Try all endpoints directly from the browser
+- **Request/Response Examples**: See live data formats and validation rules
+- **Schema Definitions**: Explore complete TypeScript types and constraints
 
-以下是使用 `curl` 命令的 API 請求示例：
+### Method 2: Automated Demo Script
 
-### 創建帳戶
+```bash
+# Run complete feature demonstration
+npm run demo
+```
+
+**Demo Features**:
+
+- Create accounts and perform deposits, withdrawals, transfers
+- Demonstrate transaction history queries (when, amount, toAccountId)
+- Test limit and since query parameters
+- Verify idempotency guarantees
+
+### Method 3: Docker Deployment
+
+```bash
+# Build and start container
+docker build -t banking-api .
+docker run -d -p 3000:3000 --name banking-api banking-api
+
+# Access APIs
+curl http://localhost:3000/health
+open http://localhost:3000/api  # Swagger documentation
+```
+
+### Method 4: Complete Test Suite
+
+```bash
+# Run all tests
+npm run test        # 62 unit tests
+npm run test:e2e    # 12 E2E tests
+npm run test:cov    # Test coverage report
+```
+
+---
+
+## 🏗️ Technical Architecture Design
+
+### Core Architecture Pattern
+
+```
+┌─────────────────────┐
+│   Interfaces       │  ← REST API (Controllers + DTOs)
+│   (Port & Adapter) │
+└─────────┬───────────┘
+          │
+┌─────────▼───────────┐
+│   Application      │  ← Use Cases (BankingService)
+│   (Orchestration)  │
+└─────────┬───────────┘
+          │
+┌─────────▼───────────┐
+│   Domain           │  ← Business Logic (Aggregates + Events)
+│   (Pure Business)  │
+└─────────┬───────────┘
+          │
+┌─────────▼───────────┐
+│   Infrastructure   │  ← Event Store + Read Models
+│   (Technical)      │
+└─────────────────────┘
+```
+
+### Event Sourcing Advantages
+
+**1. Complete Audit Trail**
+
+```typescript
+// Every business operation recorded as events
+export class AccountCreatedEvent extends AbstractEvent {
+  constructor(
+    aggregateId: AccountId,
+    public readonly accountName: string,
+    public readonly initialBalance: Money,
+    readonly occurredAt: TimestampInMillisecond = TimestampUtils.now(),
+    readonly version: number = 1,
+  ) {
+    super(EventType.ACCOUNT_CREATED, aggregateId, occurredAt, version);
+  }
+}
+
+export class MoneyTransferredEvent extends AbstractEvent {
+  constructor(
+    aggregateId: AccountId,
+    public readonly amount: Money,
+    public readonly toAccountId: AccountId,
+    readonly occurredAt: TimestampInMillisecond = TimestampUtils.now(),
+    readonly version: number = 1,
+  ) {
+    super(EventType.MONEY_TRANSFERRED, aggregateId, occurredAt, version);
+  }
+}
+```
+
+**2. Concurrent Safety Design**
+
+```typescript
+// Mutex lock implementation in transfer service
+async transfer(
+  sourceAccountId: AccountId,
+  destinationAccountId: AccountId,
+  amount: Money,
+): Promise<void> {
+  // Acquire locks for source and destination accounts
+  const resourceIds = [
+    sourceAccountId.toString(),
+    destinationAccountId.toString(),
+  ];
+
+  // Acquire mutex locks (resources sorted lexicographically to avoid deadlock)
+  const release = await this.mutexLockService.acquire(resourceIds);
+
+  try {
+    // Execute transfer
+    const command = new TransferCommand(
+      sourceAccountId,
+      destinationAccountId,
+      amount,
+    );
+    await this.commandBus.execute(command);
+  } finally {
+    // Ensure locks are released on transfer completion or error
+    release();
+  }
+}
+```
+
+**3. Read-Write Separation Optimization**
+
+```typescript
+// Command side: Handle business logic
+export class AccountAggregate {
+  execute(command: Command): DomainEvent[] {
+    switch (command.type) {
+      case CommandType.CREATE_ACCOUNT:
+        return this.handleCreateAccount(command as CreateAccountCommand);
+      case CommandType.TRANSFER:
+        return this.handleTransfer(command as TransferCommand);
+      // ... other business logic
+    }
+  }
+
+  private handleTransfer(command: TransferCommand): DomainEvent[] {
+    this.guardSufficientFunds(command.amount);
+
+    const event = new MoneyTransferredEvent(
+      command.aggregateId,
+      command.amount,
+      command.destinationAccountId,
+      command.timestamp,
+      this.state.getVersion() + 1,
+    );
+    return [event];
+  }
+}
+
+// Query side: Optimize query performance
+@Injectable()
+export class BalanceProjector implements OnModuleInit {
+  onModuleInit() {
+    // Subscribe to transfer events
+    this.eventBus.subscribe(EventType.MONEY_TRANSFERRED, (event) => {
+      const transferEvent = event as MoneyTransferredEvent;
+      void this.handleTransferEvent(transferEvent);
+    });
+  }
+
+  private async handleTransferEvent(
+    event: MoneyTransferredEvent,
+  ): Promise<void> {
+    // Update source account balance
+    const sourceAccount = await this.balanceReadModel.getAccount(
+      event.aggregateId,
+    );
+    if (sourceAccount) {
+      const newSourceBalance = sourceAccount.balance.subtract(event.amount);
+      await this.balanceReadModel.upsertAccount(
+        event.aggregateId,
+        sourceAccount.name,
+        newSourceBalance,
+      );
+    }
+
+    // Update destination account balance
+    const destinationAccount = await this.balanceReadModel.getAccount(
+      event.toAccountId,
+    );
+    if (destinationAccount) {
+      const newDestinationBalance = destinationAccount.balance.add(
+        event.amount,
+      );
+      await this.balanceReadModel.upsertAccount(
+        event.toAccountId,
+        destinationAccount.name,
+        newDestinationBalance,
+      );
+    }
+  }
+}
+```
+
+### Why Choose Event Sourcing?
+
+1. **Financial System Requirements**: Banking operations need complete transaction history, naturally fulfilled by event sourcing
+2. **Concurrency Handling**: Avoids lock contention issues of traditional CRUD, supports high-concurrency transactions
+3. **Business Traceability**: Can replay system state at any point in time, facilitating auditing and debugging
+4. **Evolution-Friendly**: Adding new features only requires new event handlers, doesn't affect existing code
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+### Test Coverage
+
+- **Unit Tests**: 62 tests covering all business logic
+- **End-to-End Tests**: 12 tests covering complete API workflows
+- **Concurrency Tests**: 100 concurrent transfer operations stress test
+- **Code Coverage**: 95% coverage including branch coverage
+
+### Test Commands
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Coverage report
+npm run test:cov
+
+# Code linting
+npm run lint
+
+# Type checking
+npm run typecheck
+```
+
+---
+
+## 🐳 Deployment & Operations
+
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t banking-api:latest .
+
+# Run container
+docker run -d -p 3000:3000 --name banking-api banking-api:latest
+
+# Health check
+curl http://localhost:3000/health
+```
+
+**If encountering container name conflict errors, please clean up existing containers first:**
+
+```bash
+# Stop and remove existing container
+docker stop banking-api && docker rm banking-api
+
+# Then run again
+docker run -d -p 3000:3000 --name banking-api banking-api:latest
+```
+
+### Production-Ready Features
+
+- **Multi-stage Docker Build**: Minimized image size
+- **Health Check Endpoints**: Support for Kubernetes Probes
+- **Structured Logging**: Facilitates monitoring and debugging
+- **Graceful Shutdown**: Ensures complete request processing
+
+---
+
+## 📡 API Reference
+
+### Starting the Service
+
+```bash
+# Development mode
+npm run start:dev
+
+# Production mode
+npm run start:prod
+
+# Docker mode
+docker build -t banking-api . && docker run -p 3000:3000 banking-api
+```
+
+### Core API Endpoints
+
+**Swagger Documentation**: http://localhost:3000/api
+
+#### 1. Create Account
 
 ```bash
 curl -X POST http://localhost:3000/accounts \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "張三的帳戶",
-    "initialBalance": {
-      "amount": 1000
-    }
+    "name": "John'\''s Account",
+    "initialBalance": { "amount": 1000 }
   }'
+
+# Response example
+{
+  "id": "12345678-1234-1234-1234-123456789012",
+  "message": "Account created successfully"
+}
 ```
 
-### 存款
+#### 2. Deposit Operation
 
 ```bash
-curl -X POST http://localhost:3000/accounts/{帳戶ID}/deposit \
+curl -X POST http://localhost:3000/accounts/{accountId}/deposit \
   -H "Content-Type: application/json" \
   -d '{
     "amount": 500
   }'
+
+# Response example
+{
+  "message": "Deposit successful"
+}
 ```
 
-### 取款
+#### 3. Withdrawal Operation
 
 ```bash
-curl -X POST http://localhost:3000/accounts/{帳戶ID}/withdraw \
+curl -X POST http://localhost:3000/accounts/{accountId}/withdraw \
   -H "Content-Type: application/json" \
   -d '{
     "amount": 200
   }'
+
+# Response example
+{
+  "message": "Withdrawal successful"
+}
 ```
 
-### 轉帳
+#### 4. Transfer Operation
 
 ```bash
-curl -X POST http://localhost:3000/accounts/{來源帳戶ID}/transfer \
+curl -X POST http://localhost:3000/accounts/{sourceAccountId}/transfer \
   -H "Content-Type: application/json" \
   -d '{
-    "destinationAccountId": "{目標帳戶ID}",
-    "amount": {
-      "amount": 300
-    }
+    "destinationAccountId": "{destinationAccountId}",
+    "amount": { "amount": 300 }
   }'
+
+# Response example
+{
+  "message": "Transfer successful"
+}
 ```
 
-### 查詢餘額
+#### 5. Query Account Balance
 
 ```bash
-curl -X GET http://localhost:3000/accounts/{帳戶ID}/balance
+curl http://localhost:3000/accounts/{accountId}
+
+# Response example
+{
+  "id": "12345678-1234-1234-1234-123456789012",
+  "name": "John's Account",
+  "balance": 800
+}
 ```
 
-### 查詢所有帳戶
+#### 6. Query Transaction History
 
 ```bash
-curl -X GET http://localhost:3000/accounts
-```
-
-## 安裝與執行
-
-### 安裝依賴
-
-```bash
-npm install
-```
-
-### 運行開發服務器
-
-```bash
-npm run start:dev
-```
-
-### 運行測試
-
-```bash
-# 單元測試
-npm run test
-
-# e2e 測試
-npm run test:e2e
-
-# 測試覆蓋率
-npm run test:cov
-```
-
-### 構建生產版本
-
-```bash
-npm run build
-```
-
-## Docker 部署
-
-本專案提供完整的 Docker 支持，適用於開發和生產環境部署。
-
-### 構建 Docker 鏡像
-
-```bash
-# 構建鏡像
-docker build -t banking-api:latest .
-
-# 查看構建的鏡像
-docker images banking-api
-```
-
-### 運行 Docker 容器
-
-```bash
-# 在後台運行容器，映射到端口 3000
-docker run -d -p 3000:3000 --name banking-api banking-api:latest
-
-# 查看運行狀態
-docker ps
-
-# 查看應用日誌
-docker logs banking-api
-```
-
-### 測試 Docker 部署
-
-```bash
-# 測試健康檢查端點
-curl http://localhost:3000/health
-
-# 預期回應: {"status":"OK"}
-
-# 測試 API 文檔
-# 瀏覽器訪問: http://localhost:3000/api
-```
-
-### 停止和清理容器
-
-```bash
-# 停止容器
-docker stop banking-api
-
-# 移除容器
-docker rm banking-api
-
-# 移除鏡像（可選）
-docker rmi banking-api:latest
-```
-
-### Docker 最佳實踐說明
-
-本專案的 Dockerfile 採用以下最佳實踐：
-
-1. **多階段構建**：分離構建環境和運行環境，減少最終鏡像大小
-2. **Node.js 20**：使用 Node.js 20 以支援 NestJS 11+ 的引擎要求
-3. **生產依賴優化**：使用 `--omit=dev --ignore-scripts` 參數：
-
-   - `--omit=dev`: 只安裝生產依賴，排除開發工具
-   - `--ignore-scripts`: 跳過 npm 腳本執行，避免以下問題：
-     - **Husky 失敗**：生產容器無 Git 環境，husky install 會失敗
-     - **安全考量**：減少執行不必要腳本的潛在風險
-     - **構建穩定性**：避免開發工具依賴導致的構建失敗
-     - **性能最佳化**：加快容器啟動速度
-
-4. **最小化攻擊面**：生產容器只包含運行應用的必要組件
-
-## Makefile 自動化操作
-
-本專案提供 Makefile 來簡化常見的開發和部署操作，讓開發者能夠快速執行各種任務。
-
-### 查看所有可用命令
-
-```bash
-make help
-```
-
-這會顯示所有可用的命令及其說明。
-
-### 開發環境
-
-#### 啟動本地開發環境
-
-```bash
-# 啟動 watch 模式的開發服務器
-make dev
-
-# 等同於: npm run start:dev
-```
-
-#### 使用 Docker 啟動開發環境
-
-```bash
-# 構建鏡像並啟動開發容器
-make dev-docker
-
-# 服務會在 http://localhost:3001 啟動
-# API 文檔: http://localhost:3001/api
-# 健康檢查: http://localhost:3001/health
-```
-
-### 生產環境
-
-#### 一鍵部署生產環境
-
-```bash
-# 構建鏡像並啟動生產容器
-make prod
-
-# 自動執行以下操作：
-# 1. 構建 Docker 鏡像
-# 2. 停止並移除現有容器
-# 3. 啟動新的生產容器
-# 4. 等待應用啟動
-```
-
-#### 測試生產環境
-
-```bash
-# 部署並自動測試生產環境
-make test-docker
-
-# 會執行：
-# 1. make prod (構建並啟動)
-# 2. 測試健康檢查端點
-# 3. 顯示測試結果
-```
-
-### 建構和管理
-
-#### Docker 鏡像操作
-
-```bash
-# 構建 Docker 鏡像
-make build
-
-# 強制重新構建（無快取）
-make build-no-cache
-
-# 查看容器和鏡像狀態
-make status
-```
-
-#### 測試相關命令
-
-```bash
-# 運行單元測試
-make test
-
-# 運行端對端測試
-make test-e2e
-
-# 運行代碼檢查
-make lint
-
-# 格式化代碼
-make format
-```
-
-### 清理和維護
-
-#### 清理容器
-
-```bash
-# 停止並移除容器
-make clean
-
-# 清理容器和鏡像
-make clean-all
-```
-
-#### 查看狀態和日誌
-
-```bash
-# 查看容器狀態
-make status
-
-# 查看容器日誌
-make logs
-
-# 安裝依賴
-make install
-```
-
-### 常用工作流程示例
-
-#### 完整的開發流程
-
-```bash
-# 1. 安裝依賴
-make install
-
-# 2. 運行測試確保代碼正常
-make test
-
-# 3. 檢查代碼風格
-make lint
-
-# 4. 啟動開發環境
-make dev
-```
-
-#### 生產部署和驗證
-
-```bash
-# 1. 構建並部署生產環境
-make prod
-
-# 2. 測試部署是否成功
-curl http://localhost:3001/health
-
-# 3. 查看運行狀態
-make status
-
-# 4. 查看日誌（如需要）
-make logs
-
-# 5. 清理（完成後）
-make clean
-```
-
-#### 完整的 CI/CD 模擬
-
-```bash
-# 1. 運行所有測試
-make test && make test-e2e
-
-# 2. 檢查代碼品質
-make lint
-
-# 3. 測試 Docker 生產環境
-make test-docker
-
-# 4. 清理環境
-make clean-all
-```
-
-### 端口配置
-
-- **開發環境**：http://localhost:3001
-- **API 文檔**：http://localhost:3001/api
-- **健康檢查**：http://localhost:3001/health
-
-> **注意**：Makefile 預設使用端口 3001 以避免與其他服務衝突。如需修改端口，請編輯 Makefile 中的 `PORT` 變數。
-
-## 項目架構
-
-項目採用分層架構設計：
-
-- **domain**: 包含領域模型、值對象、聚合和事件定義
-- **application**: 包含應用服務和命令處理器
-- **infrastructure**: 包含基礎設施組件，如事件存儲和讀模型
-- **interfaces**: 包含控制器、DTO 和驗證器
-
-## 架構設計決策
-
-### 事件源模式 (Event Sourcing)
-
-本專案採用事件源模式作為核心架構策略，具有以下優勢：
-
-#### 1. 完整的審計軌跡
-
-- **不可變事件流**：每個業務操作都以事件形式記錄，形成完整的歷史軌跡
-- **時間旅行**：可以重播任意時間點的系統狀態
-- **合規要求**：滿足金融業對交易記錄的嚴格要求
-
-#### 2. 高性能讀寫分離 (CQRS)
-
-- **命令端**：專注於業務規則驗證和事件產生
-- **查詢端**：針對特定用例優化的讀取模型
-- **獨立擴展**：讀寫操作可以獨立優化和擴展
-
-#### 3. 業務邏輯的純粹性
-
-```typescript
-// 聚合只關注業務規則，不涉及基礎設施
-class AccountAggregate {
-  execute(command: DepositCommand): DomainEvent[] {
-    // 純業務邏輯驗證
-    return [new MoneyDepositedEvent(...)];
+# Query all transactions
+curl http://localhost:3000/accounts/{accountId}/transactions
+
+# Paginated query (limit records)
+curl http://localhost:3000/accounts/{accountId}/transactions?limit=5
+
+# Time range query (millisecond timestamp)
+curl http://localhost:3000/accounts/{accountId}/transactions?since=1640995200000
+
+# Response example
+[
+  {
+    "id": "tx-001",
+    "type": "deposit",
+    "amount": 500,
+    "occurredAt": 1640995200000,
+    "version": 2
+  },
+  {
+    "id": "tx-002",
+    "type": "transfer",
+    "amount": 300,
+    "toAccountId": "87654321-4321-4321-4321-210987654321",
+    "occurredAt": 1640995260000,
+    "version": 3
   }
-}
+]
 ```
 
-### 併發控制策略
+---
 
-#### 1. 樂觀鎖 (Optimistic Locking)
+## 🔧 Development Tools & Workflow
 
-```typescript
-// 基於版本號的併發控制
-append(aggregateId: string, expectedVersion: number, events: DomainEvent[]): void {
-  const currentVersion = this.getCurrentVersion(aggregateId);
-  if (currentVersion !== expectedVersion) {
-    throw new ConcurrencyError('版本衝突，請重試');
-  }
-  // 原子性追加事件
-}
-```
-
-#### 2. 互斥鎖防死鎖 (Mutex with Deadlock Prevention)
-
-```typescript
-// 字典序排序防止死鎖
-async transfer(fromId: string, toId: string, amount: Money): Promise<void> {
-  const sortedIds = [fromId, toId].sort();
-  await this.mutexService.withLocks(sortedIds, async () => {
-    // 原子性轉帳操作
-  });
-}
-```
-
-#### 3. 併發安全保證
-
-- **帳戶間轉帳**：使用排序鎖避免 A→B 和 B→A 同時進行造成的死鎖
-- **餘額一致性**：透過事件重播確保數據完整性
-- **冪等性**：投影器支援重複事件處理
-
-### 領域驅動設計 (DDD)
-
-#### 1. 六角架構 (Hexagonal Architecture)
-
-```
-  ┌─────────────────────────┐
-  │     Interfaces          │  ← REST API, GraphQL
-  │   (Ports & Adapters)    │
-  └─────────┬───────────────┘
-            │
-  ┌─────────▼───────────────┐
-  │    Application          │  ← Use Cases, Commands
-  │   (Orchestration)       │
-  └─────────┬───────────────┘
-            │
-  ┌─────────▼───────────────┐
-  │      Domain             │  ← Business Logic (Pure)
-  │   (Core Business)       │
-  └─────────┬───────────────┘
-            │
-  ┌─────────▼───────────────┐
-  │   Infrastructure        │  ← Database, Event Bus
-  │   (Technical Concerns)  │
-  └─────────────────────────┘
-```
-
-#### 2. 聚合設計原則
-
-- **一致性邊界**：單一聚合內保證強一致性
-- **業務不變量**：餘額不能為負數等規則在聚合內執行
-- **小聚合**：單一帳戶為一個聚合，避免跨聚合事務
-
-## 事件重放功能
-
-### 使用方式
+### Code Quality Tools
 
 ```bash
-# 重放預設測試數據
-npm run replay
+# Code formatting
+npm run format
 
-# 重放指定事件文件
-npm run replay path/to/events.json
+# Code linting
+npm run lint
 
-# 使用 ts-node 直接執行
-npx ts-node scripts/replay-events.ts test-data/events.json
+# Git hooks (Husky)
+# - pre-commit: automatic lint and formatting
+# - commit-msg: Conventional Commits specification
 ```
 
-### 重放腳本功能
+### Development Best Practices
 
-1. **事件載入**：從 JSON 文件讀取序列化事件
-2. **餘額計算**：按照事件時間順序重建帳戶狀態
-3. **一致性驗證**：檢查總餘額守恆定律
-4. **詳細報告**：顯示每個帳戶的最終餘額和事件數量
+- **Git Commit Standards**: Conventional Commits (feat, fix, refactor...)
+- **Branching Strategy**: Git Flow, feature branch development
+- **Code Review**: All changes require PR review
+- **Test-First**: TDD development pattern, test coverage ≥ 90%
 
-### 示例輸出
+---
 
-```
-🎬 開始事件重放...
+## 📈 Possible Future Features
 
-📄 載入 5 個事件
-👥 發現 2 個帳戶
+### Phase 1: Production Transformation
 
-🏦 帳戶 acc-001... | 餘額: $900 | 事件數: 3
-🏦 帳戶 acc-002... | 餘額: $700 | 事件數: 2
+- **PostgreSQL Event Store**: Persistence + high-performance indexing
+- **Snapshot Mechanism**: Reduce event replay overhead
+- **Distributed Locking**: Redis replacing in-memory locks
 
-============================================================
-💰 總餘額: $1500
-📊 總事件數: 5
-✅ 重放完成！所有帳戶餘額已驗證。
-✅ 餘額守恆驗證通過
-```
+### Phase 2: Microservices
 
-## 測試覆蓋率
+- **Service Decomposition**: Account service, transaction service, query service
+- **Message Queues**: Kafka event publishing
+- **API Gateway**: Unified entry point and rate limiting
+- **Service Discovery**: Consul or Eureka
 
-[![Coverage Status](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](coverage)
+### Phase 3: Cloud Native
 
-本專案包含完整的測試套件：
+- **Kubernetes Deployment**: Auto-scaling and load balancing
+- **Observability**: Prometheus + Grafana monitoring
+- **Service Mesh**: Istio traffic management
+- **Multi-cloud Deployment**: AWS, GCP, Azure support
 
-- **單元測試**：62 個測試，覆蓋所有核心業務邏輯
-- **端對端測試**：12 個測試，覆蓋完整的 API 工作流程
-- **併發測試**：100 個並發轉帳操作的壓力測試
-- **重播測試**：事件重播功能的完整性驗證
-
-## 未來演進路徑
-
-### 階段一：生產就緒 (Production Ready)
-
-#### 1. PostgreSQL 事件存儲
-
-```sql
--- 事件存儲表設計
-CREATE TABLE event_store (
-  sequence_number BIGSERIAL PRIMARY KEY,
-  aggregate_id UUID NOT NULL,
-  event_type VARCHAR(100) NOT NULL,
-  event_version INTEGER NOT NULL,
-  event_data JSONB NOT NULL,
-  metadata JSONB,
-  occurred_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  UNIQUE(aggregate_id, event_version)
-);
-
--- 效能索引
-CREATE INDEX idx_event_store_aggregate_id ON event_store(aggregate_id);
-CREATE INDEX idx_event_store_occurred_at ON event_store(occurred_at);
-```
-
-#### 2. 快照機制 (Snapshots)
-
-```typescript
-interface AggregateSnapshot {
-  aggregateId: string;
-  aggregateType: string;
-  version: number;
-  data: any;
-  createdAt: Date;
-}
-
-// 每 100 個事件建立一次快照
-class SnapshotStore {
-  save(snapshot: AggregateSnapshot): Promise<void>;
-  load(aggregateId: string): Promise<AggregateSnapshot | null>;
-}
-```
-
-#### 3. 事件版本控制
-
-```typescript
-// 支援事件結構演進
-interface EventMigration {
-  fromVersion: number;
-  toVersion: number;
-  migrate(event: any): any;
-}
-```
-
-### 階段二：企業級擴展 (Enterprise Scale)
-
-#### 1. 訊息佇列整合
-
-```typescript
-// Apache Kafka 或 RabbitMQ 整合
-interface EventPublisher {
-  publish(event: DomainEvent): Promise<void>;
-  publishBatch(events: DomainEvent[]): Promise<void>;
-}
-
-// 支援跨服務事件通知
-@EventHandler('MoneyTransferredEvent')
-class NotificationService {
-  async handle(event: MoneyTransferredEvent): Promise<void> {
-    // 發送通知、更新外部系統等
-  }
-}
-```
-
-#### 2. 分散式鎖
-
-```typescript
-// Redis 分散式鎖替代 in-memory mutex
-class DistributedMutexService {
-  async acquireLock(keys: string[], ttl: number): Promise<Lock>;
-  async releaseLock(lock: Lock): Promise<void>;
-}
-```
-
-#### 3. 讀取模型分片
-
-```typescript
-// 按照帳戶 ID 進行分片
-class ShardedBalanceReadModel {
-  private getShardKey(accountId: string): string {
-    return accountId.slice(-2); // 最後兩位作為分片鍵
-  }
-}
-```
-
-### 階段三：雲原生架構 (Cloud Native)
-
-#### 1. 微服務拆分
-
-- **帳戶服務**：帳戶創建和基本操作
-- **交易服務**：轉帳和交易處理
-- **查詢服務**：餘額和歷史記錄查詢
-- **通知服務**：交易通知和報告
-
-#### 2. 容器化和編排
-
-```yaml
-# Kubernetes Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: banking-api
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: banking-api
-  template:
-    spec:
-      containers:
-        - name: banking-api
-          image: banking-api:latest
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: database-secret
-                  key: url
-```
-
-#### 3. 可觀測性
-
-- **分散式追蹤**：Jaeger 或 Zipkin
-- **指標監控**：Prometheus + Grafana
-- **日誌聚合**：ELK Stack
-- **健康檢查**：Kubernetes Probes
-
-### 實施建議
-
-1. **漸進式遷移**：先將 InMemoryEventStore 替換為 PostgreSQL
-2. **向後相容**：保持 API 接口不變，內部實作逐步替換
-3. **測試驅動**：每個階段都要有對應的測試覆蓋
-4. **監控先行**：在重構前建立完善的監控體系
+---
