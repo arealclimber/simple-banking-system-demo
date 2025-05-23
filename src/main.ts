@@ -21,9 +21,22 @@ async function bootstrap() {
   // 配置 Swagger
   const config = new DocumentBuilder()
     .setTitle('簡易銀行系統 API')
-    .setDescription('簡易銀行系統的 API 文檔')
+    .setDescription(
+      '使用領域驅動設計和事件源模式實現的簡易銀行系統 API 文檔。' +
+        '支持帳戶創建、存款、取款和轉帳等操作，並確保所有交易的原子性。',
+    )
     .setVersion('1.0')
-    .addTag('banking')
+    .addTag('accounts', '帳戶管理相關操作')
+    .addTag('health', '系統健康檢查')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: '輸入 JWT token',
+      },
+      'JWT-auth',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -96,3 +96,125 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# 簡易銀行系統
+
+使用領域驅動設計和事件源模式實現的簡易銀行系統 API。
+
+## 功能特點
+
+- 基於 NestJS 框架的 RESTful API
+- 採用領域驅動設計 (DDD) 和事件源 (Event Sourcing) 架構
+- 提供帳戶創建、存款、取款和轉帳等基本銀行操作
+- 確保帳戶餘額不能為負數
+- 生成帳戶交易日誌
+- 支持原子交易（使用基於互斥鎖的並發控制）
+- 單元測試和端對端測試
+
+## API 文檔
+
+啟動服務器後，您可以在瀏覽器中訪問 [http://localhost:3000/api](http://localhost:3000/api) 查看 Swagger UI 文檔。
+
+## API 請求示例
+
+以下是使用 `curl` 命令的 API 請求示例：
+
+### 創建帳戶
+
+```bash
+curl -X POST http://localhost:3000/accounts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "張三的帳戶",
+    "initialBalance": {
+      "amount": 1000
+    }
+  }'
+```
+
+### 存款
+
+```bash
+curl -X POST http://localhost:3000/accounts/{帳戶ID}/deposit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 500
+  }'
+```
+
+### 取款
+
+```bash
+curl -X POST http://localhost:3000/accounts/{帳戶ID}/withdraw \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 200
+  }'
+```
+
+### 轉帳
+
+```bash
+curl -X POST http://localhost:3000/accounts/{來源帳戶ID}/transfer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "destinationAccountId": "{目標帳戶ID}",
+    "amount": {
+      "amount": 300
+    }
+  }'
+```
+
+### 查詢餘額
+
+```bash
+curl -X GET http://localhost:3000/accounts/{帳戶ID}/balance
+```
+
+### 查詢所有帳戶
+
+```bash
+curl -X GET http://localhost:3000/accounts
+```
+
+## 安裝與執行
+
+### 安裝依賴
+
+```bash
+npm install
+```
+
+### 運行開發服務器
+
+```bash
+npm run start:dev
+```
+
+### 運行測試
+
+```bash
+# 單元測試
+npm run test
+
+# e2e 測試
+npm run test:e2e
+
+# 測試覆蓋率
+npm run test:cov
+```
+
+### 構建生產版本
+
+```bash
+npm run build
+```
+
+## 項目架構
+
+項目採用分層架構設計：
+
+- **domain**: 包含領域模型、值對象、聚合和事件定義
+- **application**: 包含應用服務和命令處理器
+- **infrastructure**: 包含基礎設施組件，如事件存儲和讀模型
+- **interfaces**: 包含控制器、DTO 和驗證器

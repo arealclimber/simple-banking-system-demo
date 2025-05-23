@@ -37,6 +37,17 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: '帳戶創建成功',
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          format: 'uuid',
+          example: '12345678-1234-1234-1234-123456789012',
+        },
+        message: { type: 'string', example: '帳戶創建成功' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -73,6 +84,12 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '存款成功',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '存款成功' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -108,6 +125,12 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '取款成功',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '取款成功' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -143,6 +166,12 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '轉帳成功',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '轉帳成功' },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -182,10 +211,22 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '成功獲取餘額',
+    schema: {
+      type: 'object',
+      properties: {
+        balance: { type: 'number', example: 1000 },
+      },
+    },
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: '帳戶不存在',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '帳戶不存在' },
+      },
+    },
   })
   async getBalance(@Param('id', ParseUUIDPipe) id: string) {
     const accountId = new AccountId(id);
@@ -211,6 +252,31 @@ export class AccountsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '成功獲取帳戶列表',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            format: 'uuid',
+            example: '12345678-1234-1234-1234-123456789012',
+          },
+          name: { type: 'string', example: '張三的帳戶' },
+          balance: { type: 'number', example: 1000 },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-05-23T02:56:11.000Z',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-05-23T02:56:11.000Z',
+          },
+        },
+      },
+    },
   })
   async getAllAccounts() {
     const accounts = await this.bankingService.getAllAccounts();
