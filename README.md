@@ -16,6 +16,7 @@
   - [🧪 Testing \& Quality Assurance](#-testing--quality-assurance)
     - [Test Coverage](#test-coverage)
     - [Test Commands](#test-commands)
+    - [Continuous Integration Pipeline](#continuous-integration-pipeline)
   - [🐳 Deployment \& Operations](#-deployment--operations)
     - [Docker Deployment](#docker-deployment)
     - [Production-Ready Features](#production-ready-features)
@@ -31,6 +32,7 @@
   - [🔧 Development Tools \& Workflow](#-development-tools--workflow)
     - [Code Quality Tools](#code-quality-tools)
     - [Development Best Practices](#development-best-practices)
+    - [GitHub Actions Workflow](#github-actions-workflow)
   - [📈 Possible Future Features](#-possible-future-features)
     - [Phase 1: Production Transformation](#phase-1-production-transformation)
     - [Phase 2: Microservices](#phase-2-microservices)
@@ -42,7 +44,7 @@
 
 ## ⭐Overview
 
-This project demonstrates a production-ready banking system with complete **interactive API documentation via Swagger UI**. You can test all endpoints directly from your browser at `http://localhost:3000/api` after starting the server.
+This project demonstrates a production-ready banking system with complete **interactive API documentation via Swagger UI** and **automated CI/CD pipeline**. You can test all endpoints directly from your browser at `http://localhost:3000/api` after starting the server.
 
 ### Technical Highlights
 
@@ -52,6 +54,7 @@ This project demonstrates a production-ready banking system with complete **inte
 - **Type Safety**: Complete TypeScript type definitions with zero `any` types
 - **Test-Driven Development**: 62 unit tests + 12 E2E tests, 95% coverage
 - **Interactive API Documentation**: Swagger UI with live API testing capability
+- **Automated CI/CD Pipeline**: GitHub Actions with multi-node testing, linting, and Docker builds
 
 ### Complete Implementation Requirements
 
@@ -65,37 +68,46 @@ This project demonstrates a production-ready banking system with complete **inte
 | ✅ Unit/Integration Tests | Jest + Supertest              | Complete test suite  |
 | ✅ Docker Deployment      | Multi-stage build             | Docker container     |
 | ✅ In-Memory Storage      | Custom EventStore + ReadModel | Pure memory runtime  |
+| ✅ CI/CD Pipeline         | GitHub Actions Workflow       | Automated testing    |
 
 ### Why These Technologies?
 
 **NestJS**: Enterprise-grade Node.js framework with built-in DI container, modular architecture, and excellent TypeScript support  
 **Event Sourcing**: Essential complete audit trail for financial systems, naturally supports concurrency and consistency  
 **Domain-Driven Design**: Best practice for complex business logic, easy to test and maintain  
-**Swagger/OpenAPI**: Provides interactive API documentation that allows immediate testing and exploration of all endpoints
+**Swagger/OpenAPI**: Provides interactive API documentation that allows immediate testing and exploration of all endpoints  
+**GitHub Actions**: Automated CI/CD pipeline ensuring code quality with multi-node testing, linting, type checking, and Docker builds
 
 ---
 
 ## 📚 Project Structure
 
 ```
-src/
-├── domain/              # Domain layer (pure business logic)
-│   ├── value-objects/   # Value objects (Money, AccountId)
-│   ├── aggregates/      # Aggregate roots (AccountAggregate)
-│   ├── events/          # Domain events
-│   └── commands/        # Business commands
-├── application/         # Application layer (use case orchestration)
-│   ├── services/        # Application services (BankingService)
-│   ├── buses/           # Command and event buses
-│   └── projectors/      # Event projectors
-├── infrastructure/      # Infrastructure layer
-│   ├── event-store/     # Event storage
-│   ├── read-model/      # Read models
-│   └── mutex/           # Concurrency control
-└── interfaces/          # Interface layer
-    ├── controllers/     # REST API controllers
-    ├── dto/             # Data transfer objects
-    └── health/          # Health checks
+├── .github/             # GitHub workflows and templates
+│   └── workflows/       # CI/CD pipeline definitions
+│       └── ci.yml       # Main CI/CD workflow
+├── src/
+│   ├── domain/          # Domain layer (pure business logic)
+│   │   ├── value-objects/   # Value objects (Money, AccountId)
+│   │   ├── aggregates/      # Aggregate roots (AccountAggregate)
+│   │   ├── events/          # Domain events
+│   │   └── commands/        # Business commands
+│   ├── application/     # Application layer (use case orchestration)
+│   │   ├── services/        # Application services (BankingService)
+│   │   ├── buses/           # Command and event buses
+│   │   └── projectors/      # Event projectors
+│   ├── infrastructure/  # Infrastructure layer
+│   │   ├── event-store/     # Event storage
+│   │   ├── read-model/      # Read models
+│   │   └── mutex/           # Concurrency control
+│   └── interfaces/      # Interface layer
+│       ├── controllers/     # REST API controllers
+│       ├── dto/             # Data transfer objects
+│       └── health/          # Health checks
+├── test/                # End-to-end tests
+├── scripts/             # Utility scripts (demo, etc.)
+├── Dockerfile           # Container definition
+└── package.json         # Dependencies and scripts
 ```
 
 ## Quick Start & Verification
@@ -332,6 +344,7 @@ export class BalanceProjector implements OnModuleInit {
 - **End-to-End Tests**: 12 tests covering complete API workflows
 - **Concurrency Tests**: 100 concurrent transfer operations stress test
 - **Code Coverage**: 95% coverage including branch coverage
+- **Automated CI/CD**: GitHub Actions running tests on Node.js 18.x and 20.x
 
 ### Test Commands
 
@@ -351,6 +364,16 @@ npm run lint
 # Type checking
 npm run typecheck
 ```
+
+### Continuous Integration Pipeline
+
+The project includes a comprehensive GitHub Actions CI/CD pipeline that automatically:
+
+- **Multi-Node Testing**: Runs all tests on Node.js 18.x and 20.x
+- **Code Quality Checks**: Executes linting and TypeScript type checking
+- **Test Coverage**: Generates and uploads coverage reports to Codecov
+- **Docker Build Verification**: Validates Docker image builds with caching
+- **Automated Triggers**: Runs on push to main/develop branches and pull requests
 
 ---
 
@@ -385,6 +408,7 @@ docker run -d -p 3000:3000 --name banking-api banking-api:latest
 - **Health Check Endpoints**: Support for Kubernetes Probes
 - **Structured Logging**: Facilitates monitoring and debugging
 - **Graceful Shutdown**: Ensures complete request processing
+- **CI/CD Integration**: Automated Docker builds in GitHub Actions pipeline
 
 ---
 
@@ -539,6 +563,27 @@ npm run lint
 - **Branching Strategy**: Git Flow, feature branch development
 - **Code Review**: All changes require PR review
 - **Test-First**: TDD development pattern, test coverage ≥ 90%
+- **Automated Quality Gates**: GitHub Actions CI/CD ensures code quality before merge
+
+### GitHub Actions Workflow
+
+The project includes a robust CI/CD pipeline (`.github/workflows/ci.yml`) that provides:
+
+```yaml
+# Key pipeline stages:
+- Lint & Type Check # Code quality validation
+- Unit Tests # Business logic verification
+- E2E Tests # API workflow testing
+- Coverage Reports # Test coverage tracking
+- Docker Build # Container image validation
+```
+
+**Pipeline Features**:
+
+- **Matrix Strategy**: Tests across Node.js 18.x and 20.x
+- **Fail-Fast**: Stops pipeline on first failure for quick feedback
+- **Caching**: Optimized with npm and Docker layer caching
+- **Coverage Integration**: Automatic Codecov uploads
 
 ---
 
