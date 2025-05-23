@@ -210,6 +210,253 @@ npm run test:cov
 npm run build
 ```
 
+## Docker 部署
+
+本專案提供完整的 Docker 支持，適用於開發和生產環境部署。
+
+### 構建 Docker 鏡像
+
+```bash
+# 構建鏡像
+docker build -t banking-api:latest .
+
+# 查看構建的鏡像
+docker images banking-api
+```
+
+### 運行 Docker 容器
+
+```bash
+# 在後台運行容器，映射到端口 3000
+docker run -d -p 3000:3000 --name banking-api banking-api:latest
+
+# 查看運行狀態
+docker ps
+
+# 查看應用日誌
+docker logs banking-api
+```
+
+### 測試 Docker 部署
+
+```bash
+# 測試健康檢查端點
+curl http://localhost:3000/health
+
+# 預期回應: {"status":"OK"}
+
+# 測試 API 文檔
+# 瀏覽器訪問: http://localhost:3000/api
+```
+
+### 停止和清理容器
+
+```bash
+# 停止容器
+docker stop banking-api
+
+# 移除容器
+docker rm banking-api
+
+# 移除鏡像（可選）
+docker rmi banking-api:latest
+```
+
+### Docker 最佳實踐說明
+
+本專案的 Dockerfile 採用以下最佳實踐：
+
+1. **多階段構建**：分離構建環境和運行環境，減少最終鏡像大小
+2. **Node.js 20**：使用 Node.js 20 以支援 NestJS 11+ 的引擎要求
+3. **生產依賴優化**：使用 `--omit=dev --ignore-scripts` 參數：
+
+   - `--omit=dev`: 只安裝生產依賴，排除開發工具
+   - `--ignore-scripts`: 跳過 npm 腳本執行，避免以下問題：
+     - **Husky 失敗**：生產容器無 Git 環境，husky install 會失敗
+     - **安全考量**：減少執行不必要腳本的潛在風險
+     - **構建穩定性**：避免開發工具依賴導致的構建失敗
+     - **性能最佳化**：加快容器啟動速度
+
+4. **最小化攻擊面**：生產容器只包含運行應用的必要組件
+
+## Makefile 自動化操作
+
+本專案提供 Makefile 來簡化常見的開發和部署操作，讓開發者能夠快速執行各種任務。
+
+### 查看所有可用命令
+
+```bash
+make help
+```
+
+這會顯示所有可用的命令及其說明。
+
+### 開發環境
+
+#### 啟動本地開發環境
+
+```bash
+# 啟動 watch 模式的開發服務器
+make dev
+
+# 等同於: npm run start:dev
+```
+
+#### 使用 Docker 啟動開發環境
+
+```bash
+# 構建鏡像並啟動開發容器
+make dev-docker
+
+# 服務會在 http://localhost:3001 啟動
+# API 文檔: http://localhost:3001/api
+# 健康檢查: http://localhost:3001/health
+```
+
+### 生產環境
+
+#### 一鍵部署生產環境
+
+```bash
+# 構建鏡像並啟動生產容器
+make prod
+
+# 自動執行以下操作：
+# 1. 構建 Docker 鏡像
+# 2. 停止並移除現有容器
+# 3. 啟動新的生產容器
+# 4. 等待應用啟動
+```
+
+#### 測試生產環境
+
+```bash
+# 部署並自動測試生產環境
+make test-docker
+
+# 會執行：
+# 1. make prod (構建並啟動)
+# 2. 測試健康檢查端點
+# 3. 顯示測試結果
+```
+
+### 建構和管理
+
+#### Docker 鏡像操作
+
+```bash
+# 構建 Docker 鏡像
+make build
+
+# 強制重新構建（無快取）
+make build-no-cache
+
+# 查看容器和鏡像狀態
+make status
+```
+
+#### 測試相關命令
+
+```bash
+# 運行單元測試
+make test
+
+# 運行端對端測試
+make test-e2e
+
+# 運行代碼檢查
+make lint
+
+# 格式化代碼
+make format
+```
+
+### 清理和維護
+
+#### 清理容器
+
+```bash
+# 停止並移除容器
+make clean
+
+# 清理容器和鏡像
+make clean-all
+```
+
+#### 查看狀態和日誌
+
+```bash
+# 查看容器狀態
+make status
+
+# 查看容器日誌
+make logs
+
+# 安裝依賴
+make install
+```
+
+### 常用工作流程示例
+
+#### 完整的開發流程
+
+```bash
+# 1. 安裝依賴
+make install
+
+# 2. 運行測試確保代碼正常
+make test
+
+# 3. 檢查代碼風格
+make lint
+
+# 4. 啟動開發環境
+make dev
+```
+
+#### 生產部署和驗證
+
+```bash
+# 1. 構建並部署生產環境
+make prod
+
+# 2. 測試部署是否成功
+curl http://localhost:3001/health
+
+# 3. 查看運行狀態
+make status
+
+# 4. 查看日誌（如需要）
+make logs
+
+# 5. 清理（完成後）
+make clean
+```
+
+#### 完整的 CI/CD 模擬
+
+```bash
+# 1. 運行所有測試
+make test && make test-e2e
+
+# 2. 檢查代碼品質
+make lint
+
+# 3. 測試 Docker 生產環境
+make test-docker
+
+# 4. 清理環境
+make clean-all
+```
+
+### 端口配置
+
+- **開發環境**：http://localhost:3001
+- **API 文檔**：http://localhost:3001/api
+- **健康檢查**：http://localhost:3001/health
+
+> **注意**：Makefile 預設使用端口 3001 以避免與其他服務衝突。如需修改端口，請編輯 Makefile 中的 `PORT` 變數。
+
 ## 項目架構
 
 項目採用分層架構設計：
